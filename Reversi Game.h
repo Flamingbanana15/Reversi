@@ -3,8 +3,11 @@
 #include <sstream>
 #include <time.h>
 #include <utility>
+#include <vector>
+
 class GameBoard {
 public:
+	int playerTurn;
 	int board[8][8];
 	const int compyAI[8][8] = { {20,  -5,  8,  8,  8,  8,  -5, 20},
 								{-5, -10, -4, -4, -4, -4, -10, -5},

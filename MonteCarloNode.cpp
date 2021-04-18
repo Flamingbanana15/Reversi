@@ -1,13 +1,13 @@
 #include "MonteCarloNode.h"
 
-MonteCarloNode::MonteCarloNode(GameBoard* start, int playerTurn, MonteCarloNode* parent = NULL, playerMove moved = playerMove{ -1,-1,0 }) {
+MonteCarloNode::MonteCarloNode(GameBoard* start, int player, MonteCarloNode* parent, playerMove moved) {
 	currentBoard = start;
-	player = playerTurn;
+	maximizingPlayer = player;
 	legalMoves = *(new std::vector<playerMove>);
 	for (int row = 0; row < 8; row++) {
 		for (int col = 0; col < 8; col++) {
-			if (start->validateMove(row, col, player)) {
-				legalMoves.push_back(playerMove{row, col, player});
+			if (start->validateMove(row, col, currentBoard->playerTurn)) {
+				legalMoves.push_back(playerMove{row, col, currentBoard->playerTurn});
 			}
 		}
 	}
@@ -18,14 +18,14 @@ MonteCarloNode::MonteCarloNode(GameBoard* start, int playerTurn, MonteCarloNode*
 	nodeScore = 0;
 }
 
-MonteCarloNode* MonteCarloNode::getMonteCarloNodeChild(MonteCarloNode* parent, playerMove move, int playerTurn) {
+MonteCarloNode* MonteCarloNode::getMonteCarloNodeChild(MonteCarloNode* parent, playerMove move) {
 	parent->currentBoard->makeMove(move.row, move.col, move.player);
-	return (new MonteCarloNode(parent->currentBoard, playerTurn, parent, move));
+	return (new MonteCarloNode(parent->currentBoard, maximizingPlayer, parent, move));
 }
 
 bool MonteCarloNode::expandToNextChild() {
 	if (childNodes.size() < legalMoves.size()) {
-		childNodes.push_back((getMonteCarloNodeChild(this, legalMoves[childNodes.size()], -player)));
+		childNodes.push_back((getMonteCarloNodeChild(this, legalMoves[childNodes.size()])));
 		return true;
 	}
 	return false;
@@ -53,12 +53,25 @@ double MonteCarloNode::findAverage() {
 
 MonteCarloNode* MonteCarloNode::findBestChildNode() {
 	int index = 0;
-	double max = childNodes[0]->findAverage();
-	for (int i = 0; i < childNodes.size(); i++) {
-		double next = childNodes[i]->findAverage();
-		if (next > max) {
-			index = i;
-			max = next;
+	//Maximizing player
+	if (maximizingPlayer == currentBoard->playerTurn) {
+		double max = childNodes[0]->findAverage();
+		for (int i = 0; i < childNodes.size(); i++) {
+			double next = childNodes[i]->findAverage();
+			if (next > max) {
+				index = i;
+				max = next;
+			}
+		}
+	}
+	else {
+		double min = childNodes[0]->findAverage();
+		for (int i = 0; i < childNodes.size(); i++) {
+			double next = childNodes[i]->findAverage();
+			if (next < min) {
+				index = i;
+				min = next;
+			}
 		}
 	}
 	return childNodes[index];

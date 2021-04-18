@@ -14,21 +14,22 @@ struct playerMove
 class MonteCarloNode {
 private:
 
-	int player;
-	GameBoard* currentBoard;
+	int maximizingPlayer;
+	
 	MonteCarloNode* parentNode;
 	std::vector<MonteCarloNode*> childNodes;
 	int nodeScore;
-	std::vector<playerMove> legalMoves;
 	int nodesViewed;
 	
 	double findAverage();
 
 public:
 	playerMove move;
+	GameBoard* currentBoard;
+	std::vector<playerMove> legalMoves;
 
-	MonteCarloNode(GameBoard*, int, MonteCarloNode*, playerMove);
-	MonteCarloNode* getMonteCarloNodeChild(MonteCarloNode* parent, playerMove, int);
+	MonteCarloNode(GameBoard*, int, MonteCarloNode* = NULL, playerMove = playerMove{ -1,-1,0 });
+	MonteCarloNode* getMonteCarloNodeChild(MonteCarloNode* parent, playerMove);
 	bool expandToNextChild();
 	MonteCarloNode* getLastChildNode();
 	bool getGameState();

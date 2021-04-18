@@ -62,7 +62,7 @@ int maxValue(GameBoard* oldBoard, int player, int alpha, int beta, int depth, in
 	time(&now);
 	//A limit on turns otherwise the starting game takes a long time
 	if (depth == maxDepth || difftime(now, startingTime) >= COMPUTING_TIME || !(oldBoard->canMove(player))) {
-		return oldBoard->evaluateBoard(player); //Something needs to go here
+		return oldBoard->evaluateBoard(player); 
 	}
 	if (oldBoard->fullGame() || (!(oldBoard->canMove(player)) && !(oldBoard->canMove(-player)))) {
 		int score = oldBoard->scoreBoard(player);

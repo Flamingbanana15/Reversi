@@ -6,6 +6,7 @@ GameBoard::GameBoard() {
 	memset(board, 0, sizeof(board));
 	//Need to initilize the starting positions
 	//1 is black -1 is white
+	playerTurn = 0;
 	board[3][3] = -1;
 	board[4][4] = -1;
 	board[3][4] = 1;
@@ -35,6 +36,7 @@ bool GameBoard::makeMove(int row, int col, int player) {
 			checkPath(row, col, r, c, player, true);
 		}
 	}
+	playerTurn = -playerTurn;
 	return true;
 }
 
@@ -147,6 +149,7 @@ void GameBoard::copyBoard(GameBoard* oldBoard) {
 			board[i][j] = oldBoard->board[i][j];
 		}
 	}
+	playerTurn = oldBoard->playerTurn;
 }
 
 //Machine Learning to evaluate these coefficients
@@ -390,6 +393,7 @@ int GameBoard::countNeighbors(int x, int y) {
 
 void playerVsPlayer(int first) {
 	GameBoard* reversi = new GameBoard();
+	reversi->playerTurn = first;
 	int row, col;
 	int consecutiveSkips = 0;
 	while (!reversi->fullGame() && consecutiveSkips < 2) {
@@ -453,7 +457,7 @@ void playerVsPlayer(int first) {
 
 void playerVsComputer(int computerNum) {
 	GameBoard* reversi = new GameBoard();
-
+	reversi->playerTurn = -1;
 	int consecutiveSkips = 0;
 	int row, col;
 	if (computerNum == -1) {

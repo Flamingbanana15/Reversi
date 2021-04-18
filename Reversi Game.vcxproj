@@ -141,6 +141,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Minimax.cpp" />
+    <ClCompile Include="MonteCarlo.cpp" />
     <ClCompile Include="MonteCarloNode.cpp" />
     <ClCompile Include="Reversi Game.cpp" />
   </ItemGroup>
