@@ -4,15 +4,8 @@
 #include <utility>
 #include <vector>
 
-struct playerMove
-{
-	int row;
-	int col;
-	int player;
-};
-
 class MonteCarloNode {
-private:
+public:
 
 	int maximizingPlayer;
 	
@@ -20,19 +13,18 @@ private:
 	std::vector<MonteCarloNode*> childNodes;
 	int nodeScore;
 	int nodesViewed;
-	
-	double findAverage();
-
-public:
 	playerMove move;
 	GameBoard* currentBoard;
-	std::vector<playerMove> legalMoves;
+	std::vector<playerMove> legalMoves;	
 
-	MonteCarloNode(GameBoard*, int, MonteCarloNode* = NULL, playerMove = playerMove{ -1,-1,0 });
-	MonteCarloNode* getMonteCarloNodeChild(MonteCarloNode* parent, playerMove);
+public :
+	MonteCarloNode(GameBoard*, int);
+	MonteCarloNode(MonteCarloNode*, playerMove);
+	~MonteCarloNode();
+
 	bool expandToNextChild();
-	MonteCarloNode* getLastChildNode();
-	bool getGameState();
-	void stepBack(int);
+	void backpropagate(int);
 	MonteCarloNode* findBestChildNode();
+	bool isLeafNode();
+	int simulateMoves();
 };

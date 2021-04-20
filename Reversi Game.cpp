@@ -1,6 +1,7 @@
 // Reversi Game.cpp : This file contains the 'main' function. Program execution begins and ends there.
 #include "Reversi Game.h"
 #include "Minimax.h"
+#include "MonteCarlo.h"
 
 GameBoard::GameBoard() {
 	memset(board, 0, sizeof(board));
@@ -11,6 +12,10 @@ GameBoard::GameBoard() {
 	board[4][4] = -1;
 	board[3][4] = 1;
 	board[4][3] = 1;
+}
+
+GameBoard::GameBoard(const GameBoard* old) {
+	copyBoard(old);
 }
 
 void GameBoard::printBoard(std::ostream& out) {
@@ -89,6 +94,18 @@ bool GameBoard::validateMove(int row, int col, int player) {
 	return false;
 }
 
+std::vector<playerMove> GameBoard::generateMoves() {
+	std::vector<playerMove> legalMoves = *new std::vector<playerMove>;
+	for (int row = 0; row < 8; row++) {
+		for (int col = 0; col < 8; col++) {
+			if (validateMove(row, col, playerTurn)) {
+				legalMoves.push_back(playerMove{ row, col, playerTurn });
+			}
+		}
+	}
+	return legalMoves;
+}
+
 bool GameBoard::canMove(int player) {
 	for (int row = 0; row < 8; row++) {
 		for (int col = 0; col < 8; col++) {
@@ -143,7 +160,7 @@ int GameBoard::scoreBoard(int player) {
 	return sum;
 }
 
-void GameBoard::copyBoard(GameBoard* oldBoard) {
+void GameBoard::copyBoard(const GameBoard* oldBoard) {
 	for (int i = 0; i < 8; i++) {
 		for (int j = 0; j < 8; j++) {
 			board[i][j] = oldBoard->board[i][j];
@@ -375,6 +392,16 @@ bool GameBoard::makeMinimaxMove(GameBoard* game, int player) {
 	return false;
 }
 
+bool GameBoard::makeMonteCarloMove(GameBoard* game, int player) {
+	playerMove temp = monteCarloMove(game, player, 2048);
+	if (temp.row != -1 && temp.col != -1) {
+		if (game->makeMove(temp.row, temp.col, temp.player))
+			return true;
+	}
+	std::cout << "Computer skips" << std::endl;
+	return false;
+}
+
 int GameBoard::countNeighbors(int x, int y) {
 	int count = 0;
 	for (int i = -1; i <= 1; i++) {
@@ -492,7 +519,7 @@ void playerVsComputer(int computerNum) {
 				reversi->printBoard();
 				std::cout << "This can take up to "+ std::to_string(COMPUTING_TIME) +" seconds, please be patient" << std::endl;
 
-				if (reversi->makeMinimaxMove(reversi, computerNum)) {
+				if (reversi->makeMonteCarloMove(reversi, computerNum)) {
 					consecutiveSkips = 0;
 				}
 				else {
@@ -512,7 +539,7 @@ void playerVsComputer(int computerNum) {
 				reversi->printBoard();
 				std::cout << "This can take up to " + std::to_string(COMPUTING_TIME) + " seconds, please be patient" << std::endl;
 				
-				if (reversi->makeMinimaxMove(reversi, computerNum)) {
+				if (reversi->makeMonteCarloMove(reversi, computerNum)) {
 					consecutiveSkips = 0;
 				}
 				else {

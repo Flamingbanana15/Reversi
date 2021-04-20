@@ -5,6 +5,14 @@
 #include <utility>
 #include <vector>
 
+struct playerMove
+{
+	int row;
+	int col;
+	int player;
+};
+
+
 class GameBoard {
 public:
 	int playerTurn;
@@ -19,6 +27,7 @@ public:
 								{20,  -5,  8,  8,  8,  8,  -5, 20} };
 
 	GameBoard();
+	GameBoard(const GameBoard*);
 	void printBoard(std::ostream& out = std::cout);
 	bool makeMove(int, int, int);
 	bool checkPath(int, int, int, int, int, bool);
@@ -28,10 +37,12 @@ public:
 	bool fullGame();
 	void clearBoard();
 	int scoreBoard(int);
-	void copyBoard(GameBoard*);
+	void copyBoard(const GameBoard*);
 	int evaluateBoard(int);
 	//int stableBoard(int);
 	int stablePieces(int, int, int);
 	bool makeMinimaxMove(GameBoard*, int);
+	bool makeMonteCarloMove(GameBoard*, int);
 	int countNeighbors(int, int);
+	std::vector<playerMove> generateMoves();
 };

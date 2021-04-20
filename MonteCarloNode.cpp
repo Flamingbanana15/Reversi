@@ -1,78 +1,86 @@
 #include "MonteCarloNode.h"
 
-MonteCarloNode::MonteCarloNode(GameBoard* start, int player, MonteCarloNode* parent, playerMove moved) {
+MonteCarloNode::MonteCarloNode(GameBoard* start, int player) {
 	currentBoard = start;
 	maximizingPlayer = player;
-	legalMoves = *(new std::vector<playerMove>);
-	for (int row = 0; row < 8; row++) {
-		for (int col = 0; col < 8; col++) {
-			if (start->validateMove(row, col, currentBoard->playerTurn)) {
-				legalMoves.push_back(playerMove{row, col, currentBoard->playerTurn});
-			}
-		}
-	}
-	move = moved;
-	parentNode = parentNode;
-	childNodes = *(new std::vector<MonteCarloNode*>);
+	legalMoves = start->generateMoves();
+	memset(&move, 0, sizeof(move));
+	parentNode = NULL;
 	nodesViewed = 0;
 	nodeScore = 0;
 }
 
-MonteCarloNode* MonteCarloNode::getMonteCarloNodeChild(MonteCarloNode* parent, playerMove move) {
-	parent->currentBoard->makeMove(move.row, move.col, move.player);
-	return (new MonteCarloNode(parent->currentBoard, maximizingPlayer, parent, move));
+MonteCarloNode::MonteCarloNode(MonteCarloNode* parent, playerMove moved) {
+	currentBoard = new GameBoard(parent->currentBoard);
+	currentBoard->makeMove(moved.row, moved.col, moved.player);
+	maximizingPlayer = parent->maximizingPlayer;
+	legalMoves = currentBoard->generateMoves();
+	move = moved;
+	parentNode = parent;
+	nodesViewed = 0;
+	nodeScore = 0;
 }
+
+MonteCarloNode::~MonteCarloNode() {
+	if (parentNode) {
+		delete currentBoard;
+	}
+	for (MonteCarloNode *it : childNodes) {
+		delete it;
+	}
+}
+
 
 bool MonteCarloNode::expandToNextChild() {
-	if (childNodes.size() < legalMoves.size()) {
-		childNodes.push_back((getMonteCarloNodeChild(this, legalMoves[childNodes.size()])));
-		return true;
+	if (legalMoves.empty()) {
+		return false;
 	}
-	return false;
+	int random = rand() % legalMoves.size();
+	childNodes.push_back(new MonteCarloNode(this, legalMoves[random]));
+	legalMoves.erase(legalMoves.begin() + random);
+	return true;
 }
 
-MonteCarloNode* MonteCarloNode::getLastChildNode() {
-	return childNodes.back();
-}
-
-bool MonteCarloNode::getGameState() {
-	return currentBoard->fullGame();
-}
-
-void MonteCarloNode::stepBack(int score) {
+void MonteCarloNode::backpropagate(int score) {
 	nodesViewed++;
 	nodeScore += score;
 	if (parentNode != NULL) {
-		parentNode->stepBack(score);
+		parentNode->backpropagate(score);
 	}
-}
-
-double MonteCarloNode::findAverage() {
-	return (double)nodeScore / (double)nodesViewed;
 }
 
 MonteCarloNode* MonteCarloNode::findBestChildNode() {
-	int index = 0;
-	//Maximizing player
-	if (maximizingPlayer == currentBoard->playerTurn) {
-		double max = childNodes[0]->findAverage();
-		for (int i = 0; i < childNodes.size(); i++) {
-			double next = childNodes[i]->findAverage();
-			if (next > max) {
-				index = i;
-				max = next;
-			}
-		}
-	}
-	else {
-		double min = childNodes[0]->findAverage();
-		for (int i = 0; i < childNodes.size(); i++) {
-			double next = childNodes[i]->findAverage();
-			if (next < min) {
-				index = i;
-				min = next;
-			}
+	int currentPlayer = currentBoard->playerTurn;
+	size_t index = 0;
+	double max = 0;
+	for(size_t i = 0; i < childNodes.size(); i++) {
+		double UCB = (currentPlayer == maximizingPlayer) ? (childNodes[i]->nodeScore / childNodes[i]->nodesViewed) : ((childNodes[i]->nodesViewed -childNodes[i]->nodeScore) / childNodes[i]->nodesViewed);
+		UCB += (sqrt(2*log(nodesViewed)/ childNodes[i]->nodesViewed));
+		if (UCB > max) {
+			max = UCB;
+			index = i;
 		}
 	}
 	return childNodes[index];
+}
+
+int MonteCarloNode::simulateMoves() {
+	GameBoard tempBoard(currentBoard);
+	while (true) {
+		std::vector<playerMove> currentMoves = tempBoard.generateMoves();
+		if (currentMoves.empty()) {
+			tempBoard.playerTurn = -tempBoard.playerTurn;
+		    currentMoves = tempBoard.generateMoves();
+			if (currentMoves.empty()) {
+				break;
+			}
+		}
+		int randomIndex = rand() % currentMoves.size();
+		tempBoard.makeMove(currentMoves[randomIndex].row, currentMoves[randomIndex].col, currentMoves[randomIndex].player);
+	}
+	return (tempBoard.scoreBoard(maximizingPlayer) > tempBoard.scoreBoard(-maximizingPlayer)) ? 1 : -1;
+}
+
+bool MonteCarloNode::isLeafNode() {
+	return childNodes.empty() || currentBoard->fullGame();
 }

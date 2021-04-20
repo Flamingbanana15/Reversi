@@ -146,6 +146,7 @@
     <ClCompile Include="Reversi Game.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="MonteCarlo.h" />
     <ClInclude Include="MonteCarloNode.h" />
     <ClInclude Include="Minimax.h" />
     <ClInclude Include="Reversi Game.h" />

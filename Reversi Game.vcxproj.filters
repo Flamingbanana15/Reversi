@@ -38,5 +38,8 @@
     <ClInclude Include="MonteCarloNode.h">
       <Filter>Source Files</Filter>
     </ClInclude>
+    <ClInclude Include="MonteCarlo.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
