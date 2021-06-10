@@ -41,7 +41,7 @@ bool GameBoard::makeMove(int row, int col, int player) {
 			checkPath(row, col, r, c, player, true);
 		}
 	}
-	playerTurn = -playerTurn;
+	playerTurn = -player;
 	return true;
 }
 
@@ -393,7 +393,7 @@ bool GameBoard::makeMinimaxMove(GameBoard* game, int player) {
 }
 
 bool GameBoard::makeMonteCarloMove(GameBoard* game, int player) {
-	playerMove temp = monteCarloMove(game, player, 2048);
+	playerMove temp = monteCarloMove(game, player, 4096);
 	if (temp.row != -1 && temp.col != -1) {
 		if (game->makeMove(temp.row, temp.col, temp.player))
 			return true;
@@ -484,7 +484,7 @@ void playerVsPlayer(int first) {
 
 void playerVsComputer(int computerNum) {
 	GameBoard* reversi = new GameBoard();
-	reversi->playerTurn = -1;
+	reversi->playerTurn = 1;
 	int consecutiveSkips = 0;
 	int row, col;
 	if (computerNum == -1) {
@@ -587,7 +587,7 @@ void playerVsComputer(int computerNum) {
 
 void computerVsComputer(int first) {
 	GameBoard* reversi = new GameBoard();
-
+	reversi->playerTurn = first;
 	int consecutiveSkips = 0;
 
 	while (!reversi->fullGame() && consecutiveSkips < 2) {
@@ -611,7 +611,7 @@ void computerVsComputer(int first) {
 		else {
 			reversi->printBoard();
 			std::cout << "This can take up to " + std::to_string(COMPUTING_TIME) + " seconds, please be patient" << std::endl;
-				if (reversi->makeMinimaxMove(reversi, -first)) {
+				if (reversi->makeMonteCarloMove(reversi, -first)) {
 				consecutiveSkips = 0;
 			}
 			else {

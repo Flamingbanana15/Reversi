@@ -81,6 +81,3 @@ int MonteCarloNode::simulateMoves() {
 	return (tempBoard.scoreBoard(maximizingPlayer) > tempBoard.scoreBoard(-maximizingPlayer)) ? 1 : -1;
 }
 
-bool MonteCarloNode::isLeafNode() {
-	return childNodes.empty() || currentBoard->fullGame();
-}

@@ -25,6 +25,5 @@ public :
 	bool expandToNextChild();
 	void backpropagate(int);
 	MonteCarloNode* findBestChildNode();
-	bool isLeafNode();
 	int simulateMoves();
 };

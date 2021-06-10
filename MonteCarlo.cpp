@@ -17,12 +17,12 @@ playerMove monteCarloMove(GameBoard* rootGame, int playerTurn, int depth) {
 				tempNode = tempNode->childNodes.back();
 			}
 		}
-		int won = tempNode->simulateMoves();
-		tempNode->backpropagate(won);
+		int moveScore = tempNode->simulateMoves() + tempNode->simulateMoves() + tempNode->simulateMoves();
+		tempNode->backpropagate(moveScore);
 	}
 	int max = 0;
 	int index = 0;
-	for (int i = 0; i < rootNode->childNodes.size(); i++) {
+	for (size_t i = 0; i < rootNode->childNodes.size(); i++) {
 		int score = rootNode->childNodes[i]->nodeScore / rootNode->childNodes[i]->nodesViewed;
 		if (score > max) {
 			max = score;
