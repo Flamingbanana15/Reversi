@@ -35,12 +35,12 @@ int minValue(GameBoard* oldBoard, int player, int alpha, int beta, int depth, in
 
 					bestValue = std::min(bestValue, tempValue);
 
-					//Alpha-beta pruning
-					beta = std::min(bestValue, beta);
-
-					if (beta <= alpha) {
+					if (bestValue <= alpha) {
 						return bestValue;
 					}
+
+					//Alpha-beta pruning
+					beta = std::min(bestValue, beta);
 
 					//Reset board
 					oldBoard->copyBoard(tempBoard.get());
@@ -86,12 +86,12 @@ int maxValue(GameBoard* oldBoard, int player, int alpha, int beta, int depth, in
 
 					bestValue = std::max(bestValue, tempValue);
 
-					//Alpha=Beta pruning
-					alpha = std::max(bestValue, alpha);
-
-					if (beta <= alpha) {
+					if (bestValue >= beta) {
 						return bestValue;
 					}
+
+					//Alpha=Beta pruning
+					alpha = std::max(bestValue, alpha);
 
 					//Reset board
 					oldBoard->copyBoard(tempBoard.get());
@@ -140,7 +140,6 @@ std::pair<int, int> minimax(GameBoard* game, int player) {
 				}
 			}
 		}
-		std::cout << maxX << ", " << maxY << std::endl;
 		time(&now);
 		if (difftime(now, start) >= COMPUTING_TIME || maxDepth > (game->scoreBoard(0)))
 			break;

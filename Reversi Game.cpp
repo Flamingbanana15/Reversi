@@ -2,6 +2,7 @@
 #include "Reversi Game.h"
 #include "Minimax.h"
 #include "MonteCarlo.h"
+#include "EvaluationBuilder.h"
 
 GameBoard::GameBoard() {
 	memset(board, 0, sizeof(board));
@@ -171,9 +172,9 @@ void GameBoard::copyBoard(const GameBoard* oldBoard) {
 
 //Machine Learning to evaluate these coefficients
 int GameBoard::evaluateBoard(int player) {
-	int unused = scoreBoard(0);
 	int playerMoves = scoreBoard(player);
 	int opponentMoves = scoreBoard(-player);
+	int unused = 64 - playerMoves - opponentMoves;
 	int score = 0 + rand()&63;
 	//Available moves
 	for (int i = 0; i < 8; i++) {
@@ -519,7 +520,7 @@ void playerVsComputer(int computerNum) {
 				reversi->printBoard();
 				std::cout << "This can take up to "+ std::to_string(COMPUTING_TIME) +" seconds, please be patient" << std::endl;
 
-				if (reversi->makeMonteCarloMove(reversi, computerNum)) {
+				if (reversi->makeMinimaxMove(reversi, computerNum)) {
 					consecutiveSkips = 0;
 				}
 				else {
@@ -539,7 +540,7 @@ void playerVsComputer(int computerNum) {
 				reversi->printBoard();
 				std::cout << "This can take up to " + std::to_string(COMPUTING_TIME) + " seconds, please be patient" << std::endl;
 				
-				if (reversi->makeMonteCarloMove(reversi, computerNum)) {
+				if (reversi->makeMinimaxMove(reversi, computerNum)) {
 					consecutiveSkips = 0;
 				}
 				else {

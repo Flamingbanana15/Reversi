@@ -27,6 +27,9 @@
     <ClCompile Include="MonteCarlo.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="EvaluationBuilder.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Reversi Game.h">
@@ -39,6 +42,9 @@
       <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="MonteCarlo.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="EvaluationBuilder.h">
       <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>
